@@ -8,7 +8,7 @@ RUN dotnet publish -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-ENV ASPNETCORE_URLS=http://+:5101
-EXPOSE 5101
+ENV ASPNETCORE_URLS=http://+:80
+EXPOSE 80
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "HealthcareAPI.dll"]
