@@ -27,12 +27,15 @@ export default function Register() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const dateOfBirthIso = dateOfBirth
+        ? `${dateOfBirth}T00:00:00.000Z`
+        : undefined;
       const payload = {
         fullName,
         email,
         password,
         phoneNumber: phoneNumber || undefined,
-        dateOfBirth: dateOfBirth ? new Date(dateOfBirth).toISOString() : undefined,
+        dateOfBirth: dateOfBirthIso,
         gender: gender || undefined,
         address: address || undefined,
       };
