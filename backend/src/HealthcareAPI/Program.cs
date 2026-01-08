@@ -13,8 +13,10 @@ using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Force loading appsettings.Development.json
-builder.Configuration.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
+}
 
 
 // --- 1. Register Services for Dependency Injection ---
