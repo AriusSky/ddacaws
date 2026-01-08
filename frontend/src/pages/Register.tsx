@@ -27,16 +27,16 @@ export default function Register() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await register({
+      const payload = {
         fullName,
         email,
         password,
         phoneNumber: phoneNumber || undefined,
-        dateOfBirth: dateOfBirth || undefined,
+        dateOfBirth: dateOfBirth ? new Date(dateOfBirth).toISOString() : undefined,
         gender: gender || undefined,
         address: address || undefined,
-        userRole:"Admin"
-      });
+      };
+      await register(payload);
     } catch (e: unknown) {
       if (e instanceof AxiosError) {
         toast.error(e.response?.data?.message ?? "Register failed");
@@ -104,7 +104,7 @@ export default function Register() {
             />
             <TextField
               label="Date of Birth"
-              type="appointmentDate"
+              type="date"
               fullWidth
               required
               InputLabelProps={{ shrink: true }}
