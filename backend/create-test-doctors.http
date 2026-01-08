@@ -1,0 +1,48 @@
+### Create Test Doctor 1 - Cardiologist
+POST http://localhost:5101/api/admin/doctors/create-test
+Content-Type: application/json
+
+{
+  "email": "dr.sarah.johnson@healthcare.com",
+  "fullName": "Dr. Sarah Johnson",
+  "password": "SecurePass123!",
+  "phoneNumber": "+1-555-0234",
+  "specialization": "Cardiology",
+  "yearsOfExperience": 8,
+  "biography": "Board-certified cardiologist with expertise in heart disease prevention and treatment.",
+  "consultationFee": 150.00
+}
+
+###
+
+### Create Test Doctor 2 - Neurologist
+POST http://localhost:5101/api/admin/doctors/create-test
+Content-Type: application/json
+
+{
+  "email": "dr.michael.chen@healthcare.com",
+  "fullName": "Dr. Michael Chen",
+  "password": "SecurePass123!",
+  "phoneNumber": "+1-555-0456",
+  "specialization": "Neurology",
+  "yearsOfExperience": 12,
+  "biography": "Experienced neurologist specializing in migraine management and neurological disorders.",
+  "consultationFee": 200.00
+}
+
+###
+
+### Create Test Doctor 3 - Dermatologist
+POST http://localhost:5101/api/admin/doctors/create-test
+Content-Type: application/json
+
+{
+  "email": "dr.emily.rodriguez@healthcare.com",
+  "fullName": "Dr. Emily Rodriguez",
+  "password": "SecurePass123!",
+  "phoneNumber": "+1-555-0678",
+  "specialization": "Dermatology",
+  "yearsOfExperience": 6,
+  "biography": "Dermatologist with focus on cosmetic and medical skin treatments.",
+  "consultationFee": 120.00
+}

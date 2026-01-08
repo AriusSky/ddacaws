@@ -1,0 +1,1280 @@
+{
+	"info": {
+		"_postman_id": "6a3044fe-f150-48d0-b209-286813d5bb37",
+		"name": "Healthcare API - DDAC Project (Role-Based)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21305836"
+	},
+	"item": [
+		{
+			"name": "Setup & Public Endpoints",
+			"item": [
+				{
+					"name": "Get All Doctors (Public)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test that response status is 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Test that response time is less than 2000 ms",
+									"pm.test(\"Response time is less than 2000ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+									"});",
+									"",
+									"// Test that response body is an array of doctors with expected properties",
+									"pm.test(\"Response body is an array of doctors with expected properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"    if (jsonData.length > 0) {",
+									"        jsonData.forEach(function(doctor) {",
+									"            pm.expect(doctor).to.be.an('object');",
+									"            pm.expect(doctor).to.have.property('doctorId');",
+									"            pm.expect(doctor).to.have.property('fullName');",
+									"            pm.expect(doctor).to.have.property('specialization');",
+									"            // Add more property checks as needed",
+									"        });",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{patient_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/doctors",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"doctors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Admin Logs In",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// This ensures we always log in before running other admin tests",
+									"console.log(\"Logging in as Admin...\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Admin login successful with status 200\", () => { pm.response.to.have.status(200); });",
+									"const jsonData = pm.response.json();",
+									"pm.test(\"Token received\", () => { pm.expect(jsonData.token).to.be.a('string'); });",
+									"pm.environment.set(\"admin_token\", jsonData.token);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@healthcare.com\",\n  \"password\": \"AdminPassword123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Doctor Logs In (Dr. Wong)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Doctor login successful\", () => { pm.response.to.have.status(200); });",
+									"const jsonData = pm.response.json();",
+									"pm.environment.set(\"doctor_token\", jsonData.token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"alice.wong@clinic.com\",\n  \"password\": \"Password123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register New Patient",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Status code is 200 OK\", () => { pm.response.to.have.status(200); });",
+									"pm.test(\"Response body contains success message\", () => {",
+									"    pm.expect(pm.response.json().message).to.eql(\"User registered successfully.\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Use a dynamic email to allow repeated runs of the collection\r",
+									"var randomNum = Math.floor(Math.random() * 1000);\r",
+									"pm.environment.set(\"patient_email\", `patient${randomNum}@test.com`);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"connection": true,
+							"user-agent": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fullName\": \"{{$randomFullName}}\",\n    \"email\": \"{{patient_email}}\",\n    \"password\": \"Password123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patient Logs In",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Patient login successful with status 200\", () => { pm.response.to.have.status(200); });",
+									"const jsonData = pm.response.json();",
+									"pm.test(\"Token received\", () => { pm.expect(jsonData.token).to.be.a('string'); });",
+									"pm.environment.set(\"patient_token\", jsonData.token);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{patient_email}}\",\n  \"password\": \"Password123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Admin Workflow",
+			"item": [
+				{
+					"name": "Admin Creates New Doctor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Doctor created successfully with status 201\", () => { pm.response.to.have.status(201); });"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var randomNum = Math.floor(Math.random() * 1000);\r",
+									"pm.environment.set(\"randomNum\", `${randomNum}`);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fullName\": \"Dr. {{$randomFirstName}} {{$randomLastName}}\",\n  \"email\": \"{{$randomFirstName}}.{{$randomLastName}}.admin@clinic.com\",\n  \"password\": \"Password456\",\n  \"specialization\": \"Pediatrics\",\n  \"yearsOfExperience\": {{randomNum}},\n  \"consultationFee\": {{randomNum}},\n  \"biography\": \"Specializes in child and adolescent health.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/doctors",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"doctors"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{admin_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Patient Workflow",
+			"item": [
+				{
+					"name": "Patient Updates Their Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200 OK\", () => { pm.response.to.have.status(200); });",
+									"pm.test(\"Update message is correct\", () => {",
+									"    pm.expect(pm.response.json().message).to.eql(\"Profile updated successfully.\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{patient_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fullName\": \"Dynamic Patient (Updated)\",\n    \"phoneNumber\": \"012-3456789\",\n    \"dateOfBirth\": \"1990-05-15T00:00:00Z\",\n    \"gender\": \"Male\",\n    \"address\": \"123 Health St, Wellness City\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patient FAILS to Create Doctor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403 Forbidden as expected\", () => { pm.response.to.have.status(403); });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{patient_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fullName\": \"Dr. Evil\",\n  \"email\": \"evil@clinic.com\",\n  \"password\": \"Password789\",\n  \"specialization\": \"World Domination\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/doctors",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"doctors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patient Books an Appointment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Appointment created successfully with status 200\", () => { pm.response.to.have.status(200); });",
+									"const jsonData = pm.response.json();",
+									"pm.test(\"Response includes appointment ID\", () => { ",
+									"    pm.expect(jsonData.appointmentId).to.be.a('number'); ",
+									"    pm.environment.set(\"appointmentId\", jsonData.appointmentId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{patient_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"doctorId\": 99, \n    \"appointmentDate\": \"2025-12-25T10:00:00Z\",\n    \"symptoms\": \"Feeling festive, but have a slight cough.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/appointments",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"appointments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patient Views Appointment by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200 OK\", () => { pm.response.to.have.status(200); });",
+									"pm.test(\"Appointment ID matches\", () => {",
+									"    const expectedId = pm.environment.get(\"appointmentId\");",
+									"    pm.expect(pm.response.json().appointmentId).to.eql(parseInt(expectedId));",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{patient_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/appointments/{{appointmentId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"appointments",
+								"{{appointmentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patient Views Their Appointments",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 OK\", () => { pm.response.to.have.status(200); });",
+									"const jsonData = pm.response.json();",
+									"pm.test(\"Response is an array with at least one appointment\", () => { ",
+									"    pm.expect(jsonData).to.be.an('array').and.to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{patient_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/appointments",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"appointments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patient Views PENDING Appointments (Filter Test)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200 OK\", () => { pm.response.to.have.status(200); });",
+									"const jsonData = pm.response.json();",
+									"pm.test(\"All returned appointments have status 'Pending'\", () => {",
+									"    if (jsonData.length > 0) {",
+									"        const allPending = jsonData.every(appt => appt.status === 'Pending');",
+									"        pm.expect(allPending).to.be.true;",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{patient_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/appointments?status=Pending",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"appointments"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "Pending"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patient Cancels Their Appointment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200 OK\", () => { pm.response.to.have.status(200); });",
+									"pm.test(\"Cancellation message received\", () => {",
+									"    pm.expect(pm.response.json().message).to.eql(\"Appointment cancelled successfully.\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{patient_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/appointments/{{appointmentId}}/cancel",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"appointments",
+								"{{appointmentId}}",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patient Views CANCELLED Appointments (Filter Test)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200 OK\", () => { pm.response.to.have.status(200); });",
+									"const jsonData = pm.response.json();",
+									"pm.test(\"All returned appointments have status 'Cancelled'\", () => {",
+									"    if (jsonData.length > 0) {",
+									"        const allCancelled = jsonData.every(appt => appt.status === 'Cancelled');",
+									"        pm.expect(allCancelled).to.be.true;",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{patient_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/appointments?status=Cancelled",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"appointments"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "Cancelled"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patient Gets Their Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200 OK\", () => { pm.response.to.have.status(200); });",
+									"const jsonData = pm.response.json();",
+									"pm.test(\"Profile data is correct\", () => {",
+									"    const patientEmail = pm.environment.get(\"patient_email\");",
+									"    pm.expect(jsonData.email).to.eql(patientEmail);",
+									"    pm.expect(jsonData.role).to.eql(\"Patient\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{patient_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{patient_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Doctor Workflow",
+			"item": [
+				{
+					"name": "Patient Books an Appointment (Doc)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Appointment created successfully with status 200\", () => { pm.response.to.have.status(200); });",
+									"const jsonData = pm.response.json();",
+									"pm.test(\"Response includes appointment ID\", () => { ",
+									"    pm.expect(jsonData.appointmentId).to.be.a('number'); ",
+									"    pm.environment.set(\"appointmentId\", jsonData.appointmentId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{patient_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"doctorId\": 99, \n    \"appointmentDate\": \"2025-12-25T10:00:00Z\",\n    \"symptoms\": \"Feeling festive, but have a slight cough.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/appointments",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"appointments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Doctor Confirms Appointment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200 OK\", () => { pm.response.to.have.status(200); });",
+									"pm.test(\"Confirmation message received\", () => {",
+									"    pm.expect(pm.response.json().message).to.eql(\"Appointment confirmed successfully.\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/appointments/{{appointmentId}}/confirm",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"appointments",
+								"{{appointmentId}}",
+								"confirm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Doctor Creates Medical Record",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200 OK\", () => { pm.response.to.have.status(200); });",
+									"const jsonData = pm.response.json();",
+									"pm.test(\"Record ID received\", () => {",
+									"    pm.expect(jsonData.recordId).to.be.a('number');",
+									"});",
+									"// Save the new record ID for the next request",
+									"pm.environment.set(\"record_id\", jsonData.recordId);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"appointmentId\": {{appointmentId}},\n    \"diagnosis\": \"Common Cold\",\n    \"symptoms\": \"Patient reports sneezing and a sore throat.\",\n    \"treatmentPlan\": \"Rest, fluids, and over-the-counter medication.\",\n    \"vitalSigns\": {\n        \"temperature\": \"37.8 C\",\n        \"bloodPressure\": \"120/80 mmHg\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/medical-records",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"medical-records"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Doctor Creates Prescription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200 OK\", () => { pm.response.to.have.status(200); });",
+									"const jsonData = pm.response.json();",
+									"pm.test(\"Prescription ID received\", () => {",
+									"    pm.expect(jsonData.prescriptionId).to.be.a('number');",
+									"});",
+									"// Save the new prescription ID for viewing later",
+									"pm.environment.set(\"prescription_id\", jsonData.prescriptionId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"recordId\": {{record_id}},\n    \"medications\": [\n        {\n            \"name\": \"Paracetamol\",\n            \"dosage\": \"500mg\"\n        },\n        {\n            \"name\": \"Cough Syrup\",\n            \"dosage\": \"10ml\"\n        }\n    ],\n    \"instructions\": \"Take Paracetamol every 6 hours as needed for fever. Take cough syrup before bed.\",\n    \"durationDays\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/prescriptions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"prescriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patient Views Their Medical Records",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200 OK\", () => { pm.response.to.have.status(200); });",
+									"const jsonData = pm.response.json();",
+									"pm.test(\"Response is an array with at least one record\", () => {",
+									"    pm.expect(jsonData).to.be.an('array').and.to.not.be.empty;",
+									"    pm.expect(jsonData[0].diagnosis).to.eql(\"Common Cold\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{patient_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/medical-records",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"medical-records"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patient Views Their Prescriptions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200 OK\", () => { pm.response.to.have.status(200); });",
+									"const jsonData = pm.response.json();",
+									"pm.test(\"Response is an array with at least one prescription\", () => {",
+									"    pm.expect(jsonData).to.be.an('array').and.to.not.be.empty;",
+									"    pm.expect(jsonData[0].medications[0].name).to.eql(\"Paracetamol\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{patient_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/prescriptions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"prescriptions"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{doctor_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

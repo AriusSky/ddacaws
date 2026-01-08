@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/src/HealthcareAPI/Dockerfile
+    ports:
+      - "5101:5101"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=healthcaredb_local;Username=postgres;Password=postgres123;Include Error Detail=true
+    depends_on:
+      - db
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: healthcaredb_local
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5001:5432"
+    volumes:
+      - healthcare_pgdata:/var/lib/postgresql/data
+
+volumes:
+  healthcare_pgdata:

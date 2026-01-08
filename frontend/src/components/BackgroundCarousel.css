@@ -1,0 +1,37 @@
+.carousel {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.carousel__slide {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    z-index: 0;
+    transition: opacity 1.5s ease;
+}
+
+.carousel__slide.is-active {
+    opacity: 1;
+    z-index: 1;
+    animation: fade-zoom 10s linear forwards;
+}
+
+@keyframes fade-zoom {
+    0% {
+        opacity: 0;
+        transform: scale(1);
+    }
+    15% {
+        opacity: 1; /* fade in over first 1.5s if total duration is 10s */
+        transform: scale(1.02); /* small initial zoom */
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1.08);
+    }
+}
