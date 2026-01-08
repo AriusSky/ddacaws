@@ -116,7 +116,7 @@ function ClinicalWorkspace({
     const [activeTab, setActiveTab] = useState(0);
 
     // Fetch the medical record for this specific appointment
-    const {data: medicalRecord, isLoading: isRecordLoading} = useQuery<MedicalRecordDetail | null>({
+    const {data: medicalRecord = null, isLoading: isRecordLoading} = useQuery<MedicalRecordDetail | null>({
         queryKey: ['doctorMedicalRecord', appointment.id],
         queryFn: async () => {
             // We assume listDoctorMedicalRecords can be filtered by appointmentId,

@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { doctorLoginApi, doctorGetProfile } from '../api/doctor/auth'
 import type { DoctorWithProfile } from "../types"
-import { toast } from "react-toastify"
 
 type DoctorAuthContextType = {
     token: string | null

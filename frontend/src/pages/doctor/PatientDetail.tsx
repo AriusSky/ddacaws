@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 import { getPatientRecords, getPatientVitals, listMyPatients } from "../../api/doctor/patients"
 import { Box, Button, Paper, Typography, Container, Avatar, Divider, Stack, Card, CardContent } from '@mui/material'
 import { format } from "date-fns"
-import type { Profile } from "../../types"
+import type { Profile, VitalRecord } from "../../types"
 
 export default function DoctorPatientDetail() {
     const { id } = useParams()
@@ -23,7 +23,7 @@ export default function DoctorPatientDetail() {
         enabled: !!patientId
     })
 
-    const { data: vitals = [] } = useQuery({
+    const { data: vitals = [] } = useQuery<VitalRecord[]>({
         queryKey: ['doctorPatientVitals', patientId],
         queryFn: () => getPatientVitals(patientId),
         enabled: !!patientId

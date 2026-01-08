@@ -21,7 +21,7 @@ export default function Profile() {
   const formatDateForInput = (dateStr?: string): string => {
     if (!dateStr) return "";
     try {
-      const appointmentDate = new Date(dateStr);
+      const date = new Date(dateStr);
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
@@ -32,9 +32,9 @@ export default function Profile() {
   };
 
   const [fullName, setFullName] = useState(user?.fullName ?? "");
-  const [email, setEmail] = useState(user?.email ?? "");
-  const [gender, setGender] = useState(user?.gender ?? "");
-  const [dateOfBirth, setDateOfBirth] = useState(formatDateForInput(user?.dateOfBirth));
+  const email = user?.email ?? "";
+  const gender = user?.gender ?? "";
+  const dateOfBirth = formatDateForInput(user?.dateOfBirth);
   const [phone, setPhone] = useState(user?.phoneNumber ?? "");
   const [address, setAddress] = useState(user?.address ?? "");
   const [avatarHovered, setAvatarHovered] = useState(false);

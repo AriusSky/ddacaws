@@ -3,20 +3,9 @@ import type {
     HealthMetricInput,
     MedicalRecordDetail,
     MedicalRecordInput,
-    Prescription,
     PrescriptionDetail,
     PrescriptionInput,
-    VitalRecord
 } from '../../types'
-import axios, {type AxiosResponse} from "axios";
-
-type DoctorPrescription = {
-    id: number
-    appointmentId: number
-    patientId: number
-    medicines: Array<{ name: string; dosage: string; frequency: string }>
-    createdAt: string
-}
 
 export async function listDoctorMedicalRecords(): Promise<MedicalRecordDetail[]> {
     const res = await http.get('/medical-records');

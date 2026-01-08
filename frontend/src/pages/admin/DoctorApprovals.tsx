@@ -4,7 +4,7 @@ import {Box, Typography, Chip, IconButton, Paper, Tooltip, Container, Button} fr
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import FactCheckIcon from '@mui/icons-material/FactCheck'; // Ensure this import exists!
+import FactCheckIcon from '@mui/icons-material/FactCheck';
 import {adminService} from '../../services/AdminServices';
 import {toast} from 'react-toastify';
 
@@ -21,7 +21,7 @@ export default function DoctorApprovals() {
         try {
             setLoading(true);
             const data = await adminService.getPendingDoctors();
-            console.log("Doctors Data:", data); // 🔍 Debug: See what the API actually returns
+            console.log("Doctors Data:", data);
             setDoctors(data);
         } catch (error) {
             console.error(error);
@@ -59,12 +59,7 @@ export default function DoctorApprovals() {
             field: 'idDisplay',
             headerName: 'ID',
             width: 70,
-            // ✅ FIX: The new syntax uses (value, row) directly
-            valueGetter: (value, row) => {
-                // If 'row' is undefined, it might be the old params structure, so we check both
-                const rowData = row || value?.row;
-                return rowData?.userId || rowData?.doctorId || "N/A";
-            }
+            valueGetter: (_value, row: any) => row?.userId || row?.doctorId || "N/A"
         },
         {field: 'fullName', headerName: 'Doctor Name', width: 200},
         {field: 'email', headerName: 'Email', width: 250},
@@ -147,8 +142,6 @@ export default function DoctorApprovals() {
                 <DataGrid
                     rows={doctors}
                     columns={columns}
-                    // 👇 THIS LINE FIXES THE WHITE SCREEN CRASH 👇
-                    // It checks for doctorId first, then userId, then falls back to a random number if both fail
                     getRowId={(row) => row.doctorId || row.userId || Math.random()}
                     initialState={{pagination: {paginationModel: {pageSize: 5}}}}
                     pageSizeOptions={[5, 10]}

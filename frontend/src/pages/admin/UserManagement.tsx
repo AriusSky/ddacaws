@@ -3,14 +3,15 @@ import { DataGrid, type GridColDef, type GridRenderCellParams } from '@mui/x-dat
 import { 
   Box, Typography, Chip, IconButton, Paper, Button, 
   Dialog, DialogTitle, DialogContent, DialogActions, TextField, 
-  MenuItem, Tooltip 
+  Tooltip 
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { adminService, type User } from '../../services/AdminServices';
+import { adminService } from '../../services/AdminServices';
+import type { User } from '../../types';
 import { toast } from 'react-toastify';
 import { useSearchParams } from 'react-router-dom';
 

@@ -1,6 +1,6 @@
 import {useQuery} from '@tanstack/react-query';
 import {getMyPrescriptions} from '../../api/prescriptions';
-import {Paper, Stack, Typography, Container, Grid, Box, Card, CardContent, Chip} from '@mui/material';
+import {Paper, Stack, Typography, Container, Grid, Box, Card, CardContent} from '@mui/material';
 import {format} from 'date-fns';
 import type {PrescriptionDetail} from '../../types';
 

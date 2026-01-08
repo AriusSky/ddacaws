@@ -1,11 +1,19 @@
-import axios from 'axios'
 
-const baseURL = import.meta.env.VITE_API_URL ?? 'http://localhost:5101/api' // adjust port 
+import axios from "axios";
+
+const baseURL =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? "" : "http://localhost:5101/api");
+
+if (import.meta.env.PROD && !import.meta.env.VITE_API_URL) {
+  console.error("Missing VITE_API_URL in production build!");
+}
 
 export const http = axios.create({
-    baseURL,
-    headers: { 'Content-Type': 'application/json' },
-})
+  baseURL,
+  headers: { "Content-Type": "application/json" },
+});
+
 
 http.interceptors.request.use((config) => {
     const token = localStorage.getItem('token')

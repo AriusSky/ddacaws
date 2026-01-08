@@ -31,7 +31,7 @@ export default function HealthData() {
     const [timeRange, setTimeRange] = useState(30); // Default to 30 days
 
     // Use react-query to fetch chart data based on user selections
-    const {data: chartData, isLoading, isError} = useQuery({
+    const {data: chartData, isLoading, isError} = useQuery<ChartData>({
         // The query key includes the metric and time range, so it refetches when they change
         queryKey: ['healthChart', selectedMetric, timeRange],
         queryFn: () => getHealthChartData(timeRange, selectedMetric),

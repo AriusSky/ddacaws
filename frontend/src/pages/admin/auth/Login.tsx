@@ -1,5 +1,4 @@
 import {useState} from 'react';
-import {useNavigate} from 'react-router-dom';
 import {
     Box, Paper, Typography, TextField, Button, Alert, Grid, CircularProgress, CssBaseline
 } from '@mui/material';
@@ -8,7 +7,6 @@ import {useAuth} from '../../../context/AuthContext.tsx';
 import {toast} from 'react-toastify';
 
 export default function Login() {
-    const navigate = useNavigate();
     const {login} = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

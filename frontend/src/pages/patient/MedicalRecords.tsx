@@ -1,6 +1,6 @@
 import {useQuery} from "@tanstack/react-query"
 import {getMyRecords} from "../../api/medicalRecords"
-import {Button, Paper, Stack, Typography, Container, Grid, Box, Card, CardContent, Chip} from "@mui/material"
+import {Button, Paper, Stack, Typography, Container, Grid, Box, Chip} from "@mui/material"
 import {format} from "date-fns"
 import {toast} from "react-toastify"
 import {Link} from "react-router-dom"

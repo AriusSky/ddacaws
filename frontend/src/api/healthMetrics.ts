@@ -1,6 +1,6 @@
 // frontend/src/api/healthMetrics.ts
 import { http } from './http';
-import type {ChartData} from "recharts/types/state/chartDataSlice";
+import type { ChartData } from "../types";
 
 // API function to fetch the chart data
 export async function getHealthChartData(days: number, metricType: string): Promise<ChartData> {

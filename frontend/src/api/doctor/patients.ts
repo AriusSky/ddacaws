@@ -1,5 +1,5 @@
 import { http } from '../http'
-import type {Profile, MedicalRecord, MedicalRecordDetail} from '../../types'
+import type {Profile, MedicalRecordDetail} from '../../types'
 
 export async function listMyPatients(): Promise<Profile[]> {
     const res = await http.get('/patients')

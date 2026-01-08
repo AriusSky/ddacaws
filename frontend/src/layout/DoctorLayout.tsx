@@ -1,6 +1,4 @@
-import { AppBar, Box, Button, Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material"
-import MenuIcon from '@mui/icons-material/Menu'
-import LogoutIcon from '@mui/icons-material/Logout'
+import { Box, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Toolbar } from "@mui/material"
 import { useState } from "react"
 import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import { useDoctorAuth } from "../context/DoctorAuthContext"
@@ -26,11 +24,6 @@ export default function DoctorLayout() {
     const location = useLocation()
 
     console.log('DoctorLayout rendered - doctor:', doctor)
-
-    const handleLogout = () => {
-        logout()
-        navigate('/doctor/login')
-    }
 
     const content = (
         <List>

@@ -10,13 +10,6 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { getIncomeStats } from '../../api/doctor/income'
 import { toast } from "react-toastify"
 
-const cards = [
-    { label: "Today's Appointments", value: 6, to: '/doctor/appointments'},
-    { label: "Pending Approvals", value: 3, to: '/doctor/appointments'},
-    { label: "My Patients", value: 128, to: '/doctor/patients'},
-    { label: "AI Suggestions", value: 4, to: '/doctor/ai-tools'},
-]
-
 export default function DoctorDashboard() {
     const navigate = useNavigate()
     const { confirm, reject, reschedule, appointments } = useDoctorAppointments()
@@ -53,7 +46,10 @@ export default function DoctorDashboard() {
 
     const validateTimeSlot = (value: string): string => {
         if (!value) return 'Time slot is required'
-        if (value === selectedAppointment?.timeSlot && rescheduleDate === selectedAppointment?.date) {
+        const selectedAppointmentDate = selectedAppointment?.appointmentDate
+            ? selectedAppointment.appointmentDate.split('T')[0]
+            : ''
+        if (value === selectedAppointment?.timeSlot && rescheduleDate === selectedAppointmentDate) {
             return 'Please select a different date or time'
         }
         return ''
@@ -64,7 +60,7 @@ export default function DoctorDashboard() {
         return appointments
             .filter(apt => 
                 apt.doctorId === selectedAppointment.doctorId && 
-                apt.date === rescheduleDate && 
+                apt.appointmentDate?.split('T')[0] === rescheduleDate && 
                 apt.status !== 'Cancelled' &&
                 apt.id !== selectedAppointment.id
             )
@@ -95,7 +91,7 @@ export default function DoctorDashboard() {
     
     const startReschedule = (appointment: any) => {
         setSelectedAppointment(appointment)
-        setRescheduleDate(appointment.date)
+        setRescheduleDate(appointment.appointmentDate?.split('T')[0] ?? '')
         setRescheduleTimeSlot(appointment.timeSlot)
         setRescheduleOpen(true)
     }

@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { 
   Box, Paper, Typography, Table, TableBody, TableCell, TableContainer, 
-  TableHead, TableRow, Chip, IconButton, Avatar, Button, Stack
+  TableHead, TableRow, Chip, IconButton, Avatar, Stack
 } from '@mui/material';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { adminService, type User } from '../../services/AdminServices'; // 👈 Use User type
+import { adminService } from '../../services/AdminServices';
+import type { User } from '../../types';
 import { toast } from 'react-toastify';
 
 export default function DoctorManagement() {

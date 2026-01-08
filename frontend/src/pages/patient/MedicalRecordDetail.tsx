@@ -1,7 +1,7 @@
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { downloadRecordPdf, getRecord } from "../../api/medicalRecords"
-import { Button, Paper, Typography, Container, Stack, Grid, Card, CardContent, Box, Divider } from '@mui/material'
+import { Button, Paper, Typography, Container, Stack, Grid, Box, Divider } from '@mui/material'
 import { format } from 'date-fns'
 import { toast } from 'react-toastify'
 import { useEffect } from "react"
