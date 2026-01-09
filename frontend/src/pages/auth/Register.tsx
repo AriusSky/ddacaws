@@ -20,10 +20,24 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [dobYear, setDobYear] = useState("");
+  const [dobMonth, setDobMonth] = useState("");
+  const [dobDay, setDobDay] = useState("");
   const [gender, setGender] = useState("");
   const [address, setAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: 100 }, (_, i) =>
+    String(currentYear - i)
+  );
+  const monthOptions = Array.from({ length: 12 }, (_, i) =>
+    String(i + 1).padStart(2, "0")
+  );
+  const dayOptions = Array.from({ length: 31 }, (_, i) =>
+    String(i + 1).padStart(2, "0")
+  );
+  const dateOfBirth =
+    dobYear && dobMonth && dobDay ? `${dobYear}-${dobMonth}-${dobDay}` : "";
 
   // Validation functions
   const validateFullName = (value: string): string => {
@@ -135,6 +149,20 @@ export default function Register() {
     }));
   };
 
+  const handleDobChange = (
+    next: { year?: string; month?: string; day?: string }
+  ) => {
+    const nextYear = next.year ?? dobYear;
+    const nextMonth = next.month ?? dobMonth;
+    const nextDay = next.day ?? dobDay;
+    const nextDob =
+      nextYear && nextMonth && nextDay ? `${nextYear}-${nextMonth}-${nextDay}` : "";
+    setErrors((prev) => ({
+      ...prev,
+      dateOfBirth: validateDateOfBirth(nextDob),
+    }));
+  };
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -145,12 +173,15 @@ export default function Register() {
 
     setIsSubmitting(true);
     try {
+      const dateOfBirthIso = dateOfBirth
+        ? `${dateOfBirth}T00:00:00.000Z`
+        : undefined;
       await register({
         fullName,
         email,
         password,
         phoneNumber,
-        dateOfBirth,
+        dateOfBirth: dateOfBirthIso,
         gender,
         address,
       });
@@ -256,24 +287,66 @@ export default function Register() {
               helperText={errors.phoneNumber}
               placeholder="(123) 456-7890"
             />
-            <TextField
-              label="Date of Birth *"
-              type="appointmentDate"
-              fullWidth
-              InputLabelProps={{ shrink: true }}
-              sx={{ mb: 2, "& .MuiOutlinedInput-root": { borderRadius: 4 } }}
-              value={dateOfBirth}
-              onChange={(e) =>
-                handleFieldChange(
-                  e.target.value,
-                  setDateOfBirth,
-                  "dateOfBirth",
-                  validateDateOfBirth
-                )
-              }
-              error={!!errors.dateOfBirth}
-              helperText={errors.dateOfBirth}
-            />
+            <Box sx={{ mb: 2, display: "flex", gap: 2 }}>
+              <TextField
+                label="Year *"
+                select
+                fullWidth
+                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 4 } }}
+                value={dobYear}
+                onChange={(e) => {
+                  setDobYear(e.target.value);
+                  handleDobChange({ year: e.target.value });
+                }}
+                error={!!errors.dateOfBirth}
+              >
+                <MenuItem value="">Year</MenuItem>
+                {yearOptions.map((year) => (
+                  <MenuItem key={year} value={year}>
+                    {year}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                label="Month *"
+                select
+                fullWidth
+                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 4 } }}
+                value={dobMonth}
+                onChange={(e) => {
+                  setDobMonth(e.target.value);
+                  handleDobChange({ month: e.target.value });
+                }}
+                error={!!errors.dateOfBirth}
+              >
+                <MenuItem value="">Month</MenuItem>
+                {monthOptions.map((month) => (
+                  <MenuItem key={month} value={month}>
+                    {month}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                label="Day *"
+                select
+                fullWidth
+                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 4 } }}
+                value={dobDay}
+                onChange={(e) => {
+                  setDobDay(e.target.value);
+                  handleDobChange({ day: e.target.value });
+                }}
+                error={!!errors.dateOfBirth}
+                helperText={errors.dateOfBirth}
+              >
+                <MenuItem value="">Day</MenuItem>
+                {dayOptions.map((day) => (
+                  <MenuItem key={day} value={day}>
+                    {day}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Box>
             <TextField
               label="Gender *"
               select
